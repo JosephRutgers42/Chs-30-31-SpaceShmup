@@ -22,6 +22,9 @@ public class Hero : MonoBehaviour {
     // This variable holds a reference to the last triggering GameObject
     private GameObject lastTriggerGo = null;
 
+    public delegate void WeaponFireDelegate();
+    public WeaponFireDelegate fireDelegate;
+
 
     //TODO: Add function delegate declaration
 
@@ -37,7 +40,7 @@ public class Hero : MonoBehaviour {
         {
             Debug.LogError("Hero.Awake() - Attempted to assign second Hero.S!");
         }
-        //fireDelegate += TempFire;
+        fireDelegate += TempFire;
 
         // Reset the weapons to start _Hero with 1 blaster
         ClearWeapons();
@@ -59,6 +62,9 @@ public class Hero : MonoBehaviour {
 
         // Rotate the ship to make it feel more dynamic
         transform.rotation = Quaternion.Euler(yAxis * pitchMult, xAxis * rollMult, 0);
+        if (Input.GetAxis("Jump") == 1 && fireDelegate != null) {
+            fireDelegate();
+        }
 
 
         if (Input.GetKeyDown(KeyCode.Space))
@@ -85,14 +91,14 @@ public class Hero : MonoBehaviour {
 
         projGO.transform.position = transform.position;
         Rigidbody rigidB = projGO.GetComponent<Rigidbody>();
-
-        //        rigidB.velocity = Vector3.up * projectileSpeed;        
-
-        Projectile proj = projGO.GetComponent<Projectile>();  
-
+        Projectile proj = projGO.GetComponent<Projectile>();
         proj.type = WeaponType.blaster;
         float tSpeed = Main.GetWeaponDefinition(proj.type).velocity;
         rigidB.velocity = Vector3.up * tSpeed;
+
+        //        rigidB.velocity = Vector3.up * projectileSpeed;        
+
+        
     }
 
 
